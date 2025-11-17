@@ -47,13 +47,12 @@ Generated from SQL queries in Databricks:
 
 PDFs showing successful execution of each layer with data quality checks passed.
 
-## How to Re-run this
+## Key Technologies
 
-1. **Downloaded** the entire CVE repository from GitHub (~317k JSON files)
-2. **Packaged** it into a single Parquet file for efficient upload
-3. **Ingested** to Databricks and filtered to 2024 data only
-4. **Normalized** nested JSON into queryable relational tables
-5. **Analyzed** using SQL to find security trends and risk patterns
+- **Databricks** - Cloud data platform
+- **Apache Spark / PySpark** - Distributed data processing
+- **Delta Lake** - ACID transactions for data lakes
+- **SQL** - Business intelligence queries
 
 ## Key Findings from 2024 Data
 
@@ -62,9 +61,43 @@ PDFs showing successful execution of each layer with data quality checks passed.
 - Most vulnerabilities are rated **MEDIUM** severity (~14k)
 - **2024 was a record-breaking year** for vulnerability disclosures
 
-## Running This Project
+---
 
-1. Upload Parquet file to Databricks Unity Catalog volume
-2. Run notebooks in order: `00 → 01 → 02 → 03`
-3. Each layer builds on the previous (Bronze → Silver → Gold)
-4. SQL analysis notebook generates all visualizations
+## How to Reproduce This Project
+
+### Required
+- Databricks Community Edition account (free at https://community.cloud.databricks.com/)
+- Unity Catalog volume path: `/Volumes/workspace/default/assignment1`
+
+### Step 1: Prepare Data Locally
+1. Clone CVE repository from GitHub: `git clone https://github.com/CVEProject/cvelistV5`
+2. Run `create_parquet.py` on your local machine
+   - This packages all 317k JSON files into a single Parquet file
+   - Takes ~3-4 minutes, outputs `filesystem_snapshot.parquet`
+3. Upload the Parquet file to Databricks
+
+### Step 2: Extract Data in Databricks
+1. Open `00_Data_Download.py` in Databricks
+2. Run all cells - this extracts the Parquet and recreates the CVE folder structure
+3. Run `00_File_Creation_Check.py` in parallel to monitor progress
+
+### Step 3: Build Bronze Layer
+1. Open `01_Bronze_Ingestion.py`
+2. Run all cells - this reads 317k JSON files, filters to 2024 only, creates `cve_bronze.records` table
+3. Verify: You should see ~40,000 records and data quality checks passing
+
+### Step 4: Build Silver Layer
+1. Open `02_Silver_Normalization.py`
+2. Run all cells - this normalizes the Bronze data into two clean tables
+3. Verify: Check that `cve_silver.cves` and `cve_silver.affected_products` tables exist
+
+### Step 5: Run Analysis
+1. Open `03_Exploratory_Analysis_sql.sql` (SQL notebook)
+2. Run each query cell to generate insights
+3. Click the "+" button on results to create visualizations (bar charts, line charts, pie charts)
+4. Export your visualizations to the `plots/` folder
+
+### Expected Outputs
+- **Tables Created:** `cve_bronze.records`, `cve_silver.cves`, `cve_silver.affected_products`
+- **Record Count:** ~40,000 CVEs from 2024
+- **Visualizations:** 4 charts showing vendor rankings, severity distribution, temporal trends, and product vulnerabilities
