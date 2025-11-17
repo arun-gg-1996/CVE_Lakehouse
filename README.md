@@ -95,7 +95,6 @@ PDFs showing successful execution of each layer with data quality checks passed.
 1. Open `03_Exploratory_Analysis_sql.sql` (SQL notebook)
 2. Run each query cell to generate insights
 3. Click the "+" button on results to create visualizations (bar charts, line charts, pie charts)
-4. Export your visualizations to the `plots/` folder
 
 ### Expected Outputs
 - **Tables Created:** `cve_bronze.records`, `cve_silver.cves`, `cve_silver.affected_products`
